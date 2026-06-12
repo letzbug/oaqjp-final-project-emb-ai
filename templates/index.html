@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion Detector</title>
+</head>
+<body>
+    <h1>Emotion Detector</h1>
+    <textarea id="text" rows="4" cols="50" placeholder="Enter text here..."></textarea><br><br>
+    <button onclick="analyzeEmotion()">Analyze Emotion</button>
+    <p id="result"></p>
+
+    <script>
+        async function analyzeEmotion() {
+            const text = document.getElementById('text').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!text) {
+                resultDiv.innerHTML = '<strong style="color:red;">Error: Invalid input. Text cannot be empty.</strong>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/emotionDetector', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: text})
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `<strong style="color:red;">Error: ${data.error}</strong>`;
+                } else {
+                    resultDiv.innerHTML = `<strong>Dominant Emotion:</strong> ${data.dominant_emotion}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<strong style="color:red;">Error connecting to server.</strong>';
+            }
+        }
+    </script>
+</body>
+</html>
